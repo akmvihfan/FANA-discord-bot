@@ -8,7 +8,7 @@
 ## Whats new today?
 - Updated Premisson System
 - Share link system 
-- Rank system(Do not finished)
+- Rank system(Canceled today.Comming in next month )
 
 ## What will be next?
 - Online System (Use /online to fast tell friend that you are online)
