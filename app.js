@@ -18,7 +18,7 @@ function getTagbyMember(member) {
 
 
 }
-function newEmbed(title, color, text) {
+function newEmbed(title, color, text, time) {
   // Extract the required classes from the discord.js module
 
   // Create an instance of a Discord client
@@ -33,7 +33,8 @@ function newEmbed(title, color, text) {
     // Set the color of the embed
     .setColor(color)
     // Set the main content of the embed
-    .setDescription(text);
+    .setDescription(text)
+    .setFooter(time)
   return embed;
 };
 
@@ -72,14 +73,10 @@ client.on('message', msg => {
 //Commands System Here:D
   if (cmd === 'whatsnew') {
     if (msg.deletable) msg.delete();
-    msg.channel.send(newEmbed(whatsnew.title, 0x025DEC, whatsnew.text));
+    msg.channel.send(newEmbed(whatsnew.title, 0x025DEC, whatsnew.text, whatsnew.time));
     
   };
 
-  if (cmd === 'ann') {
-    if (msg.deletable) msg.delete();
-    msg.reply("If you want to try announcement,Just find it in http://www.bibifamily.ga")
-  };
   if (cmd === 'shut-down') {
     if (!msg.member.hasPermission("KICK_MEMBERS")) {
       msg.reply("Only Admin Can Execute This Command")
@@ -109,42 +106,11 @@ client.on('message', msg => {
     if (msg.deletable) msg.delete();
     msg.channel.send(newEmbed("Share Link Here!", 0x41C0F9, "To share just copy this \n https://discord.gg/u5EQZ2T"))
   };
-
-  if (cmd === "rank" ) {
-      if (msg.deletable) msg.delete();
-
-      // Either a mention or ID
-      const Target = msg.mentions.members.first() || msg.guild.members.get(args[0]);
-
-      // No person found
-      if (!Target)
-          return msg.reply("Couldn't find that person?").then(m => m.delete(5000));
-
-      // If there's no argument
-      if (!args[1])
-          return msg.channel.send("Please Enter Rank Name").then(m => m.delete(5000));
-      if (args[1] === "admin") 
-        {
-          Target.addRole(admin).catch(console.error);
-          Target.removeRole(normal_member).catch(console.error);
-          Target.removeRole(owner).catch(console.error);
-        };
-        if (args[1] === "owner") 
-        {
-          Target.addRole(owner).catch(console.error);
-          Target.removeRole(normal_member).catch(console.error);
-          Target.removeRole(admin).catch(console.error);
-        };
-        if (args[1] === "normal member") 
-        {
-          Target.addRole(normal_member).catch(console.error);
-          Target.removeRole(admin).catch(console.error);
-          Target.removeRole(owner).catch(console.error);
-        };
-  
-  
-        }
-
+  if (cmd === 'help') {
+    if (msg.deletable) msg.delete();
+    msg.reply("To make sure channel clean,I early sent massage to you :D").then(m => m.delete(10000))
+    msg.author.sendEmbed(newEmbed("Commands List", 0x41C0F9, "/help - Show this page\n/whatsnew - Show what's new text!\n/link - Give you link of this discord server\n/***Admin Only***\n/stop - Fast tell server's bot will stop\n/restart - Fast tell server's bot will restart\n/start - Fast tell server's bot will start."))
+  };
 
 
   if (cmd === "reload") {
