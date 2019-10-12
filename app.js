@@ -4,7 +4,16 @@ var config = require("./config.json");
 var whatsnew = require(whatsnew_file);
 const newUsers = new Discord.Collection();
 const client = new Discord.Client();
+
+
 const hook = new Discord.WebhookClient('631860716621660160', 'cksIFNUeB8UQotK7q7piIVWDyVpxEqDMgu0tUgol4PtM3_FVZMvV-L4f5-Jn7E5s9ohQ');
+
+function getTime() {
+  var d = new Date();
+  var time = " UTC+0:00  " + d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate() + "   " + d.getHours() + "-" + d.getMinutes() + "-" + d.getSeconds();
+  return time;
+};
+
 function getTagbyMember(member) {
   var user = member;
   user = user.toString();
@@ -42,8 +51,8 @@ function newEmbed(title, color, text, time) {
 var title;
 var text;
 client.on('ready', () => {
-  console.log(`Hey i am in!This is FANA Owner's Bot ${client.user.tag}!`);
-  client.user.setGame('Use \"/whatsnew\" ')
+  console.log(getTime() + `Hey i am in!This is FANA Owner's Bot ${client.user.tag}!`);
+  client.user.setGame('Use \"/help\" ')
 });
 
 client.on('message', msg => {
@@ -76,6 +85,20 @@ client.on('message', msg => {
     msg.channel.send(newEmbed(whatsnew.title, 0x025DEC, whatsnew.text, whatsnew.time));
     
   };
+  if (cmd === 'online') {
+    if (msg.deletable) msg.delete();
+    const channel = msg.member.guild.channels.find("name", "member-online-fast-tell");
+    channel.send(getTagbyMember(msg.author) + "Goes Online! \n @everyone ");
+  
+    
+  };
+  if (cmd === 'afk') {
+    if (msg.deletable) msg.delete();
+    const channel = msg.member.guild.channels.find("name", "member-online-fast-tell");
+    channel.send(getTagbyMember(msg.author) + "Is now AFK \n @everyone ");
+  };
+
+  
 
   if (cmd === 'shut-down') {
     if (!msg.member.hasPermission("KICK_MEMBERS")) {
@@ -109,7 +132,7 @@ client.on('message', msg => {
   if (cmd === 'help') {
     if (msg.deletable) msg.delete();
     msg.reply("To make sure channel clean,I early sent massage to you :D").then(m => m.delete(10000))
-    msg.author.sendEmbed(newEmbed("Commands List", 0x41C0F9, "/help - Show this page\n/whatsnew - Show what's new text!\n/link - Give you link of this discord server\n/***Admin Only***\n/stop - Fast tell server's bot will stop\n/restart - Fast tell server's bot will restart\n/start - Fast tell server's bot will start."))
+    msg.author.sendEmbed(newEmbed("Commands List", 0x41C0F9, "/help - Show this page\n/whatsnew - Show what's new text!\n/link - Give you link of this discord server\n***Admin Only***\n/stop - Fast tell server's bot will stop\n/restart - Fast tell server's bot will restart\n/start - Fast tell server's bot will start.", getTime()));
   };
 
 
