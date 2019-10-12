@@ -100,7 +100,7 @@ client.on('message', msg => {
 
   
 
-  if (cmd === 'shut-down') {
+  if (cmd === 'stop') {
     if (!msg.member.hasPermission("KICK_MEMBERS")) {
       msg.reply("Only Admin Can Execute This Command")
     }
@@ -132,7 +132,7 @@ client.on('message', msg => {
   if (cmd === 'help') {
     if (msg.deletable) msg.delete();
     msg.reply("To make sure channel clean,I early sent massage to you :D").then(m => m.delete(10000))
-    msg.author.sendEmbed(newEmbed("Commands List", 0x41C0F9, "/help - Show this page\n/whatsnew - Show what's new text!\n/link - Give you link of this discord server\n***Admin Only***\n/stop - Fast tell server's bot will stop\n/restart - Fast tell server's bot will restart\n/start - Fast tell server's bot will start.", getTime()));
+    msg.author.sendEmbed(newEmbed("Commands List", 0x41C0F9, "/help - Show this page\n/whatsnew - Show what's new text!\n/link - Give you link of this discord server\n***Admin Only***\n/stop - Fast tell server's bot will stop\n/restart - Fast tell server's bot will restart\n/start - Fast tell server's bot will start", getTime()));
   };
 
 
