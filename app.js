@@ -3,8 +3,9 @@ const Discord = require('discord.js');
 var config = require("./config.json");
 var whatsnew = require(whatsnew_file);
 const newUsers = new Discord.Collection();
-const client = new Discord.Client();
-
+const bot = new Discord.Client({disableEveryone: true});
+const fs = require('fs');
+bot.commands = new Discord.Collection();
 fs.readdir("./commands/", (err, files) => {
 
   if(err) console.log(err);
@@ -21,7 +22,7 @@ fs.readdir("./commands/", (err, files) => {
   });
 });
 
-const hook = new Discord.WebhookClient('631860716621660160', 'cksIFNUeB8UQotK7q7piIVWDyVpxEqDMgu0tUgol4PtM3_FVZMvV-L4f5-Jn7E5s9ohQ');
+
 
 function getTime() {
   var d = new Date();
@@ -37,7 +38,7 @@ function getTagbyMember(member) {
   } else {
     user = user.split("@")[1].split(">")[0];
   };
-  var tag = "@" + client.users.get(user).tag + " ";
+  var tag = "@" + bot.users.get(user).tag + " ";
   return tag;
 
 
@@ -45,7 +46,7 @@ function getTagbyMember(member) {
 function newEmbed(title, color, text, time) {
   // Extract the required classes from the discord.js module
 
-  // Create an instance of a Discord client
+  // Create an instance of a Discord bot
 
 
   // We can create embeds using the MessageEmbed constructor
@@ -65,23 +66,24 @@ function newEmbed(title, color, text, time) {
 
 var title;
 var text;
-client.on('ready', () => {
-  console.log(getTime() + `Hey i am in!This is FANA Owner's Bot ${client.user.tag}!`);
-  client.user.setGame('Use \"/help\" ')
+bot.on('ready', () => {
+  console.log(getTime() + `Hey i am in!This is FANA Owner's Bot ${bot.user.tag}!`);
+  bot.user.setGame('Use \"/help\" ')
 });
 
-client.on('message', message => {
+bot.on('message', message => {
   if(message.author.bot) return;
   if(message.channel.type === "dm") return;
   if (!message.guild) return;
   let prefix = config.prefix;
   let messageArray = message.content.split(" ");
-  let cmd = messageArray[0];
-  let args = messageArray.slice(1);
+  let args = message.content.slice(prefix.length).trim().split(/ +/g);
+  let cmd = args.shift().toLowerCase();
+
   let commandfile = bot.commands.get(cmd.slice(prefix.length));
   if(commandfile) {
     commandfile.run(bot,message,args);
-    if (message.deleteable) message.delete;
+    console.info("Command")
   };
 
 
@@ -164,7 +166,7 @@ client.on('message', message => {
   }};
 });
 
-const fs = require('fs');
+
 
 
 fs.watchFile(whatsnew_file, (curr, prev) => {
@@ -177,17 +179,16 @@ fs.watchFile(whatsnew_file, (curr, prev) => {
 
 
 
-client.on('guildMemberAdd', member => {
+bot.on('guildMemberAdd', member => {
   var role = member.guild.roles.find("name", "Normal Member");
   member.addRole(role);
   const server = member.guild;
   const channel = server.channels.find("name", "join-and-leave")
   channel.send(getTagbyMember(member) + "  Welcome!!! Nice to meet you today!\n ` To check What's New just use /whatsnew .  `\n >More info Ask Owner : @fan87#0769 ! ");
-  hook.send(" Role System >>  `" + getTagbyMember(member) + "Has been rank up to \"Normal Member\"`")
 });
 
 
-client.on('guildMemberRemove', member => {
+bot.on('guildMemberRemove', member => {
   const server = member.guild;
   const channel = server.channels.find("name", "join-and-leave")
   channel.send(getTagbyMember(member) + "  Left The Discord Server .Sad :( But Nice to meet you again");
@@ -195,4 +196,4 @@ client.on('guildMemberRemove', member => {
 });
 
 
-client.login(config.token);
+bot.login(config.token);
