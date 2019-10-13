@@ -5,6 +5,21 @@ var whatsnew = require(whatsnew_file);
 const newUsers = new Discord.Collection();
 const client = new Discord.Client();
 
+fs.readdir("./commands/", (err, files) => {
+
+  if(err) console.log(err);
+  let jsfile = files.filter(f => f.split(".").pop() === "js");
+  if(jsfile.length <= 0){
+    console.log("Couldn't find commands.");
+    return;
+  }
+
+  jsfile.forEach((f, i) =>{
+    let props = require(`./commands/${f}`);
+    console.log(`${f} loaded!`);
+    bot.commands.set(props.help.name, props);
+  });
+});
 
 const hook = new Discord.WebhookClient('631860716621660160', 'cksIFNUeB8UQotK7q7piIVWDyVpxEqDMgu0tUgol4PtM3_FVZMvV-L4f5-Jn7E5s9ohQ');
 
@@ -55,93 +70,86 @@ client.on('ready', () => {
   client.user.setGame('Use \"/help\" ')
 });
 
-client.on('message', msg => {
-  
-  const prefix = config.prefix;
+client.on('message', message => {
+  if(message.author.bot) return;
+  if(message.channel.type === "dm") return;
+  if (!message.guild) return;
+  let prefix = config.prefix;
+  let messageArray = message.content.split(" ");
+  let cmd = messageArray[0];
+  let args = messageArray.slice(1);
+  let commandfile = bot.commands.get(cmd.slice(prefix.length));
+  if(commandfile) {
+    commandfile.run(bot,message,args);
+    if (message.deleteable) message.delete;
+  };
 
-  // If the author's a bot, return
-  // If the message was not sent in a server, return
-  // If the message doesn't start with the prefix, return
-  if (msg.author.bot) return;
-  if (!msg.guild) return;
-  if (!msg.content.startsWith(prefix)) return;
 
-  // Arguments and command variable
-  // cmd is the first word in the message, aka the command
-  // args is an array of words after the command
-  // !say hello I am a bot
-  // cmd == say (because the prefix is sliced off)
-  // args == ["hello", "I", "am", "a", "bot"]
-  const args = msg.content.slice(prefix.length).trim().split(/ +/g);
-  const cmd = args.shift().toLowerCase();
-  const admin = msg.guild.roles.find(role => role.name === "Admin");
-  const normal_member = msg.guild.roles.find(role => role.name === "Normal Member");
-  const owner = msg.guild.roles.find(role => role.name === "Owner");
-  
+
 
 //Commands System Here:D
   if (cmd === 'whatsnew') {
-    if (msg.deletable) msg.delete();
-    msg.channel.send(newEmbed(whatsnew.title, 0x025DEC, whatsnew.text, whatsnew.time));
+    if (message.deletable) message.delete();
+    message.channel.send(newEmbed(whatsnew.title, 0x025DEC, whatsnew.text, whatsnew.time));
     
   };
   if (cmd === 'online') {
-    if (msg.deletable) msg.delete();
-    const channel = msg.member.guild.channels.find("name", "member-online-fast-tell");
-    channel.send(getTagbyMember(msg.author) + "Goes Online! \n @everyone ");
+    if (message.deletable) message.delete();
+    const channel = message.member.guild.channels.find("name", "member-online-fast-tell");
+    channel.send(getTagbyMember(message.author) + "Goes Online! \n @everyone ");
   
     
   };
   if (cmd === 'afk') {
-    if (msg.deletable) msg.delete();
-    const channel = msg.member.guild.channels.find("name", "member-online-fast-tell");
-    channel.send(getTagbyMember(msg.author) + "Is now AFK \n @everyone ");
+    if (message.deletable) message.delete();
+    const channel = message.member.guild.channels.find("name", "member-online-fast-tell");
+    channel.send(getTagbyMember(message.author) + "Is now AFK \n @everyone ");
   };
 
   
 
   if (cmd === 'stop') {
-    if (!msg.member.hasPermission("KICK_MEMBERS")) {
-      msg.reply("Only Admin Can Execute This Command")
+    if (!message.member.hasPermission("KICK_MEMBERS")) {
+      message.reply("Only Admin Can Execute This Command")
     }
     else {
-      if (msg.deletable) msg.delete();
-      msg.channel.send(newEmbed("Bot Stop Warn!!!", 0xFF4D2D, "Nice to meet you today,But server has too stop now.All commands(Like /whatsnew) and Other System will been shut down.Good Bye!We'll Back Maybe Tomorrow!"))
+      if (message.deletable) message.delete();
+      message.channel.send(newEmbed("Bot Stop Warn!!!", 0xFF4D2D, "Nice to meet you today,But server has too stop now.All commands(Like /whatsnew) and Other System will been shut down.Good Bye!We'll Back Maybe Tomorrow!"))
     }
   };
   if (cmd === 'start') {
-    if (!msg.member.hasPermission("KICK_MEMBERS")) {
-      msg.reply("Only Admin Can Execute This Command")
+    if (!message.member.hasPermission("KICK_MEMBERS")) {
+      message.reply("Only Admin Can Execute This Command")
     }
     else {
-    if (msg.deletable) msg.delete();
-    msg.channel.send(newEmbed("Bot Started!!", 0x3ADC00, "Bot Started!!! Hope you enjoy it!"))
+    if (message.deletable) message.delete();
+    message.channel.send(newEmbed("Bot Started!!", 0x3ADC00, "Bot Started!!! Hope you enjoy it!"))
   }};
   if (cmd === 'restart') {
-    if (!msg.member.hasPermission("KICK_MEMBERS")) {
-      msg.reply("Only Admin Can Execute This Command")
+    if (!message.member.hasPermission("KICK_MEMBERS")) {
+      message.reply("Only Admin Can Execute This Command")
     }
     else {
-    if (msg.deletable) msg.delete();
-    msg.channel.send(newEmbed("Bot Restart Warn!", 0xF6F941, "Bot will be restart!Be right back!"))
+    if (message.deletable) message.delete();
+    message.channel.send(newEmbed("Bot Restart Warn!", 0xF6F941, "Bot will be restart!Be right back!"))
   }};
   if (cmd === 'link') {
-    if (msg.deletable) msg.delete();
-    msg.channel.send(newEmbed("Share Link Here!", 0x41C0F9, "To share just copy this \n https://discord.gg/u5EQZ2T"))
+    if (message.deletable) message.delete();
+    message.channel.send(newEmbed("Share Link Here!", 0x41C0F9, "To share just copy this \n https://discord.gg/u5EQZ2T"))
   };
   if (cmd === 'help') {
-    if (msg.deletable) msg.delete();
-    msg.reply("To make sure channel clean,I early sent massage to you :D").then(m => m.delete(10000))
-    msg.author.sendEmbed(newEmbed("Commands List", 0x41C0F9, "/help - Show this page\n/whatsnew - Show what's new text!\n/link - Give you link of this discord server\n***Admin Only***\n/stop - Fast tell server's bot will stop\n/restart - Fast tell server's bot will restart\n/start - Fast tell server's bot will start", getTime()));
+    if (message.deletable) message.delete();
+    message.reply("To make sure channel clean,I early sent massage to you :D").then(m => m.delete(10000))
+    message.author.sendEmbed(newEmbed("Commands List", 0x41C0F9, "/help - Show this page\n/whatsnew - Show what's new text!\n/link - Give you link of this discord server\n***Admin Only***\n/stop - Fast tell server's bot will stop\n/restart - Fast tell server's bot will restart\n/start - Fast tell server's bot will start", getTime()));
   };
 
 
   if (cmd === "reload") {
-    if (!msg.member.hasPermission("KICK_MEMBERS")) {
-      msg.reply("Only Admin Can Execute This Command")
+    if (!message.member.hasPermission("KICK_MEMBERS")) {
+      message.reply("Only Admin Can Execute This Command")
     }
     else {
-    if (msg.deletable) msg.delete();
+    if (message.deletable) message.delete();
     fs.readFile(whatsnew_file, (err, data) => {
     
       whatsnew = JSON.parse(data);
@@ -152,7 +160,7 @@ client.on('message', msg => {
       config = JSON.parse(data);
   
     });
-    msg.reply("File Has Been Updated!")
+    message.reply("File Has Been Updated!")
   }};
 });
 
